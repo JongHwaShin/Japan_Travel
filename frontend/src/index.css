@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply bg-background font-sans text-text-main;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 모바일: 앱처럼 중앙 고정 / 태블릿·PC: 전체 너비 */
+  #root {
+    @apply min-h-screen relative overflow-x-hidden;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  img {
+    @apply object-cover;
+  }
+}
+
+@layer components {
+  /* 모바일: pt-14(헤더) pb-20(바텀탭) / PC: pt-16(헤더) pb-0 */
+  .page-container {
+    @apply px-4 pt-14 pb-20 md:px-6 lg:pt-16 lg:pb-6;
+  }
+
+  .section-title {
+    @apply text-lg font-bold text-text-main mb-3;
+  }
+
+  /* 터치 친화적 최소 크기 (44px) */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+}
+
+@layer utilities {
+  /* iOS Safe Area 대응 */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* 스크롤 관련 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 부드러운 터치 스크롤 */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* 좋아요 통통 튀는 애니메이션 */
+  .animate-like {
+    animation: like-bounce 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+}
+
+@keyframes like-bounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.4); }
+  60%  { transform: scale(0.9); }
+  80%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

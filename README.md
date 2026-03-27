@@ -1,0 +1,144 @@
+# 🗾 일본여행 앱 (Japan Travel)
+
+일본 여행 정보를 한곳에서! 맛집·관광지 탐색부터 여행일기, 교통정보, 환율계산까지 제공하는 웹 서비스입니다.
+
+---
+
+## ✨ 주요 기능
+
+| 기능 | 설명 |
+|------|------|
+| 🍜 맛집/관광지 | 지역·카테고리별 필터링, 상세 정보 및 지도 연동 |
+| 📝 여행일기 | 마크다운 에디터로 일기 작성, 좋아요·댓글 기능 |
+| 🚃 교통정보 | 지역별 JR·지하철·버스·공항버스·택시 정보 |
+| 💴 환율계산기 | 실시간 엔/원 환율 조회 및 양방향 계산기 |
+| 🔐 JWT 인증 | 로그인/회원가입, Access Token + Refresh Token 자동 갱신 |
+
+---
+
+## 🛠 기술 스택
+
+### Backend
+- **Java 17** + **Spring Boot 3.2.5**
+- **Spring Security** + **Spring Data JPA**
+- **MariaDB** — DB명: `japan_travel`
+- **JWT** — jjwt 0.11.5 (Access 1h / Refresh 30d)
+- **Swagger** — SpringDoc OpenAPI 2.3.0
+- **Logback** — 로그 파일 관리
+
+### Frontend
+- **React 18** + **Vite** (포트 3000)
+- **Tailwind CSS** — 반응형 디자인 (모바일/태블릿/PC)
+- **TanStack Query v5** — 서버 상태 캐싱
+- **Zustand** — 클라이언트 인증 상태
+- **React Hook Form** + **Axios**
+
+---
+
+## 📁 프로젝트 구조
+
+```
+japan-travel/
+├── backend/
+│   └── src/main/java/com/japantravel/
+│       ├── controller/      # REST 컨트롤러
+│       ├── service/         # 비즈니스 로직
+│       ├── repository/      # JPA Repository
+│       ├── domain/          # Entity + Enum
+│       ├── dto/             # Request/Response DTO
+│       ├── security/        # JWT 필터
+│       ├── global/          # 전역 예외처리
+│       └── config/          # Security, Swagger 설정
+└── frontend/
+    └── src/
+        ├── api/             # Axios 인스턴스
+        ├── components/      # 공통 컴포넌트
+        ├── hooks/           # 커스텀 훅
+        ├── pages/           # 라우트 페이지
+        └── store/           # Zustand 스토어
+```
+
+---
+
+## 🚀 실행 방법
+
+### 사전 준비
+- Java 17+
+- Node.js 18+
+- MariaDB (DB명: `japan_travel`, 포트 3306)
+
+### 백엔드
+
+```bash
+cd backend
+
+# 1. application.yml 설정
+cp src/main/resources/application.yml.example src/main/resources/application.yml
+# application.yml 에서 DB 비밀번호, JWT 시크릿 입력
+
+# 2. DB 스키마 초기화
+# schema.sql 을 MariaDB에 직접 실행
+
+# 3. 서버 실행
+./gradlew bootRun
+```
+
+> 서버 실행 후 → http://localhost:8080
+
+### 프론트엔드
+
+```bash
+cd frontend
+
+# 1. 의존성 설치
+npm install
+
+# 2. 개발 서버 실행
+npm run dev
+```
+
+> 브라우저에서 → http://localhost:3000
+
+---
+
+## 📖 API 문서
+
+Swagger UI: **http://localhost:8080/swagger-ui/index.html**
+
+### 주요 엔드포인트
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/auth/signup` | 회원가입 |
+| POST | `/api/auth/login` | 로그인 |
+| POST | `/api/auth/refresh` | 토큰 갱신 |
+| GET | `/api/regions` | 지역 목록 |
+| GET | `/api/places` | 맛집/관광지 목록 |
+| GET | `/api/places/{id}` | 장소 상세 |
+| GET | `/api/logs` | 여행일기 목록 |
+| POST | `/api/logs` | 일기 작성 |
+| POST | `/api/logs/{id}/like` | 좋아요 토글 |
+| GET | `/api/transport` | 교통정보 |
+| GET | `/api/exchange` | 환율 조회 |
+
+---
+
+## 📱 반응형 브레이크포인트
+
+| 구간 | 범위 | 레이아웃 |
+|------|------|----------|
+| 모바일 | ~768px | 하단 네비게이션, 1열 카드 |
+| 태블릿 | 768px~1024px | 하단 네비게이션, 2열 카드 |
+| PC | 1024px~ | 상단 헤더 + 좌측 사이드바, 3열 카드 |
+
+---
+
+## 📌 버전 히스토리
+
+### v1.0.0 (2026-03-27)
+- 🎉 초기 릴리즈
+- 백엔드: JWT 인증, 맛집/관광지, 여행일기 CRUD, 교통정보, 환율 API
+- 프론트엔드: 전체 페이지 구현 (홈·목록·상세·작성·교통·환율)
+
+### v2.0 (예정)
+- 🤖 AI 여행 플래너 (Claude API 연동)

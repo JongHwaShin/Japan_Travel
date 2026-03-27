@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/japan_travel?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: your_db_username
+    password: your_db_password
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  jackson:
+    time-zone: Asia/Seoul
+
+jwt:
+  secret: your-secret-key-must-be-at-least-32-characters-long
+  access-expiration: 3600000       # 1시간 (ms)
+  refresh-expiration: 2592000000   # 30일 (ms)
