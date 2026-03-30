@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -11,6 +12,7 @@ import LogDetailPage from './pages/LogDetailPage'
 import LogWritePage from './pages/LogWritePage'
 import TransportPage from './pages/TransportPage'
 import ExchangePage from './pages/ExchangePage'
+import CityPage from './pages/CityPage'
 import useAuthStore from './store/authStore'
 
 // 로그인/회원가입: 헤더·바텀탭 없이 단독 레이아웃
@@ -64,6 +66,21 @@ function PrivateRoute() {
 }
 
 function App() {
+  const logout = useAuthStore((s) => s.logout)
+
+  // 앱 시작 시 토큰 유효성 확인 — 토큰 없으면 비로그인 상태로 정리
+  useEffect(() => {
+    const token =
+      localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken')
+    if (!token) {
+      // 토큰 없는데 잔여 데이터가 남아있을 경우 정리
+      ;['accessToken', 'refreshToken', 'authUser', 'auth-storage'].forEach((key) => {
+        localStorage.removeItem(key)
+        sessionStorage.removeItem(key)
+      })
+    }
+  }, [])
+
   return (
     <Routes>
       {/* 인증 페이지 (헤더/바텀탭 없음) */}
@@ -77,6 +94,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/places" element={<PlacesPage />} />
         <Route path="/places/:id" element={<PlaceDetailPage />} />
+        <Route path="/city/:regionId" element={<CityPage />} />
         <Route path="/logs" element={<LogsPage />} />
         <Route path="/logs/:id" element={<LogDetailPage />} />
 

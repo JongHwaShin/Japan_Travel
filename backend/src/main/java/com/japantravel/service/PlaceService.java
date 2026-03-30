@@ -1,6 +1,8 @@
 package com.japantravel.service;
 
+import com.japantravel.domain.Place;
 import com.japantravel.domain.enums.PlaceCategory;
+import com.japantravel.dto.place.PlaceImageResponse;
 import com.japantravel.dto.place.PlaceResponse;
 import com.japantravel.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.List;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
+    private final GooglePlacesService googlePlacesService;
 
     /**
      * 전체 장소 목록 조회 (지역/카테고리 필터 옵션)
@@ -25,21 +28,21 @@ public class PlaceService {
     public List<PlaceResponse> getPlaces(Long regionId, PlaceCategory category) {
         log.info("[PlaceService] getPlaces 시작 - regionId: {}, category: {}", regionId, category);
 
-        List<PlaceResponse> result;
+        List<Place> places;
 
         if (regionId != null && category != null) {
-            result = placeRepository.findByRegionIdAndCategory(regionId, category)
-                    .stream().map(PlaceResponse::from).toList();
+            places = placeRepository.findByRegionIdAndCategory(regionId, category);
         } else if (regionId != null) {
-            result = placeRepository.findByRegionId(regionId)
-                    .stream().map(PlaceResponse::from).toList();
+            places = placeRepository.findByRegionId(regionId);
         } else if (category != null) {
-            result = placeRepository.findByCategory(category)
-                    .stream().map(PlaceResponse::from).toList();
+            places = placeRepository.findByCategory(category);
         } else {
-            result = placeRepository.findAll()
-                    .stream().map(PlaceResponse::from).toList();
+            places = placeRepository.findAll();
         }
+
+        List<PlaceResponse> result = places.stream()
+                .map(this::toResponseWithFallbackImage)
+                .toList();
 
         log.info("[PlaceService] getPlaces 완료 - 조회 건수: {}", result.size());
         return result;
@@ -52,14 +55,55 @@ public class PlaceService {
     public PlaceResponse getPlace(Long placeId) {
         log.info("[PlaceService] getPlace 시작 - placeId: {}", placeId);
 
-        PlaceResponse response = placeRepository.findById(placeId)
-                .map(PlaceResponse::from)
+        Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> {
                     log.warn("[PlaceService] 존재하지 않는 장소 - placeId: {}", placeId);
                     return new IllegalArgumentException("존재하지 않는 장소입니다.");
                 });
 
-        log.info("[PlaceService] getPlace 완료 - placeId: {}, 이미지 수: {}", placeId, response.getImages().size());
+        PlaceResponse response = toResponseWithFallbackImage(place);
+        log.info("[PlaceService] getPlace 완료 - placeId: {}, 이미지 수: {}",
+                placeId, response.getImages().size());
         return response;
+    }
+
+    /**
+     * Place → PlaceResponse 변환
+     * place_images 없으면 Google Places API로 사진 자동 검색
+     */
+    private PlaceResponse toResponseWithFallbackImage(Place place) {
+        List<PlaceImageResponse> images = place.getImages().stream()
+                .map(PlaceImageResponse::from)
+                .toList();
+
+        if (images.isEmpty()) {
+            String photoUrl = googlePlacesService.searchPlacePhoto(
+                    place.getNameKo(), place.getRegion().getNameKo());
+            if (photoUrl != null) {
+                images = List.of(PlaceImageResponse.builder()
+                        .imageId(null)
+                        .imageUrl(photoUrl)
+                        .isMain(true)
+                        .build());
+            }
+        }
+
+        return PlaceResponse.builder()
+                .placeId(place.getPlaceId())
+                .regionId(place.getRegion().getRegionId())
+                .regionNameKo(place.getRegion().getNameKo())
+                .category(place.getCategory())
+                .nameKo(place.getNameKo())
+                .nameJp(place.getNameJp())
+                .address(place.getAddress())
+                .latitude(place.getLatitude())
+                .longitude(place.getLongitude())
+                .description(place.getDescription())
+                .openHours(place.getOpenHours())
+                .priceRange(place.getPriceRange())
+                .rating(place.getRating())
+                .createdAt(place.getCreatedAt())
+                .images(images)
+                .build();
     }
 }

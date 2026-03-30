@@ -1,42 +1,46 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
-const useAuthStore = create(
-  persist(
-    (set) => ({
-      user: null,       // { id, email, nickname }
-      isLoggedIn: false,
+// 앱 시작 시 저장소에서 토큰/유저 복원 (localStorage 우선, 없으면 sessionStorage)
+const getStoredToken = () =>
+  localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken')
 
-      /**
-       * 로그인 성공 시 호출
-       * @param {{ id: number, email: string, nickname: string }} user
-       * @param {string} accessToken
-       * @param {string} refreshToken
-       */
-      login(user, accessToken, refreshToken) {
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-        set({ user, isLoggedIn: true })
-      },
+const getStoredUser = () => {
+  const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser')
+  try { return raw ? JSON.parse(raw) : null } catch { return null }
+}
 
-      /**
-       * 로그아웃: 토큰 삭제 + 상태 초기화 + /login 이동
-       */
-      logout() {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        set({ user: null, isLoggedIn: false })
-        window.location.href = '/login'
-      },
-    }),
-    {
-      name: 'auth-storage',       // localStorage key
-      partialize: (state) => ({   // 토큰은 별도 관리, user/isLoggedIn만 persist
-        user: state.user,
-        isLoggedIn: state.isLoggedIn,
-      }),
-    }
-  )
-)
+const useAuthStore = create((set) => ({
+  user: getStoredUser(),
+  isLoggedIn: !!getStoredToken(),
+
+  /**
+   * 로그인 성공 시 호출
+   * @param {{ id: number, email: string, nickname: string }} user
+   * @param {string} accessToken
+   * @param {string} refreshToken
+   * @param {boolean} autoLogin - true: localStorage(30일), false: sessionStorage(탭 닫으면 삭제)
+   */
+  login(user, accessToken, refreshToken, autoLogin = false) {
+    const storage = autoLogin ? localStorage : sessionStorage
+    storage.setItem('accessToken', accessToken)
+    storage.setItem('refreshToken', refreshToken)
+    storage.setItem('authUser', JSON.stringify(user))
+    set({ user, isLoggedIn: true })
+  },
+
+  /**
+   * 로그아웃: localStorage + sessionStorage 둘 다 삭제 후 /login 이동
+   */
+  logout() {
+    ;['accessToken', 'refreshToken', 'authUser'].forEach((key) => {
+      localStorage.removeItem(key)
+      sessionStorage.removeItem(key)
+    })
+    // 이전 버전 zustand persist 잔여 데이터 정리
+    localStorage.removeItem('auth-storage')
+    set({ user: null, isLoggedIn: false })
+    window.location.href = '/login'
+  },
+}))
 
 export default useAuthStore

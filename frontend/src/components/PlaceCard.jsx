@@ -11,21 +11,28 @@ const CATEGORY_COLORS = {
   카페:   'bg-yellow-100 text-yellow-600',
   관광지: 'bg-blue-100 text-blue-600',
   쇼핑:   'bg-pink-100 text-pink-600',
+  숙박:   'bg-purple-100 text-purple-600',
+}
+
+// 카테고리별 기본 이미지 (place_images 없을 때 사용)
+const CATEGORY_FALLBACK_IMAGES = {
+  맛집:   'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80&fit=crop',
+  관광지: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80&fit=crop',
+  카페:   'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80&fit=crop',
+  쇼핑:   'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80&fit=crop',
+  숙박:   'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80&fit=crop',
 }
 
 /**
  * API PlaceResponse 필드를 그대로 받는다.
- * @param {{
- *   placeId: number,
- *   nameKo: string,
- *   category: '맛집'|'관광지'|'카페'|'쇼핑',
- *   images: Array<{imageUrl: string, isMain: boolean}>,
- *   rating: number,
- *   priceRange: 'LOW'|'MEDIUM'|'HIGH'
- * }} props
+ * images 없으면 카테고리별 기본 이미지 표시
  */
 export default function PlaceCard({ placeId, nameKo, category, images, rating, priceRange }) {
-  const imageUrl = images?.find((i) => i.isMain)?.imageUrl ?? images?.[0]?.imageUrl
+  const imageUrl =
+    images?.find((i) => i.isMain)?.imageUrl ??
+    images?.[0]?.imageUrl ??
+    CATEGORY_FALLBACK_IMAGES[category]
+
   const categoryColor = CATEGORY_COLORS[category] ?? 'bg-gray-100 text-gray-600'
   const priceLabel = PRICE_LABELS[priceRange] ?? ''
 

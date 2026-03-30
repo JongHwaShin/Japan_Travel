@@ -6,22 +6,25 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// 요청 인터셉터: Authorization 헤더 자동 주입
+// 요청 인터셉터: localStorage → sessionStorage 순으로 토큰 확인
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
+  const token =
+    localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
 
-// 응답 인터셉터: 401 처리
+// 응답 인터셉터: 401 처리 — localStorage + sessionStorage 둘 다 삭제
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      ;['accessToken', 'refreshToken', 'authUser'].forEach((key) => {
+        localStorage.removeItem(key)
+        sessionStorage.removeItem(key)
+      })
       window.location.href = '/login'
     }
     return Promise.reject(error)

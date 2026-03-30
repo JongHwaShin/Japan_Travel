@@ -31,7 +31,7 @@ CREATE TABLE regions (
 CREATE TABLE places (
     place_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
     region_id      BIGINT NOT NULL,
-    category       ENUM('맛집','관광지','카페','쇼핑') NOT NULL,
+    category       ENUM('맛집','관광지','카페','쇼핑','숙박') NOT NULL,
     name_ko        VARCHAR(100) NOT NULL,
     name_jp        VARCHAR(100),
     address        VARCHAR(255),
@@ -127,3 +127,7 @@ CREATE TABLE exchange_rates (
 
 -- v1.1: refresh_token 컬럼 추가
 ALTER TABLE users ADD COLUMN refresh_token VARCHAR(500);
+
+-- v1.2: places category ENUM에 '숙박' 추가
+ALTER TABLE places
+MODIFY COLUMN category ENUM('맛집','관광지','카페','쇼핑','숙박') NOT NULL;

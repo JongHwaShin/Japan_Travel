@@ -36,7 +36,7 @@ export default function LoginPage() {
     }
   }, [setValue])
 
-  const onSubmit = async ({ email, password, rememberEmail }) => {
+  const onSubmit = async ({ email, password, rememberEmail, autoLogin }) => {
     setServerError('')
     setIsLoading(true)
     try {
@@ -49,7 +49,7 @@ export default function LoginPage() {
         localStorage.removeItem(SAVED_EMAIL_KEY)
       }
 
-      login(user, accessToken, refreshToken)
+      login(user, accessToken, refreshToken, autoLogin)
       navigate('/', { replace: true })
     } catch (err) {
       setServerError(err.response?.data?.message ?? '로그인에 실패했습니다.')
@@ -127,17 +127,30 @@ export default function LoginPage() {
               )}
             </div>
 
-            {/* 아이디 저장 */}
-            <div className="flex items-center gap-2">
-              <input
-                id="rememberEmail"
-                type="checkbox"
-                className="w-4 h-4 accent-primary cursor-pointer"
-                {...register('rememberEmail')}
-              />
-              <label htmlFor="rememberEmail" className="text-sm text-text-sub cursor-pointer select-none">
-                이메일 저장
-              </label>
+            {/* 이메일 저장 + 자동로그인 */}
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2">
+                <input
+                  id="rememberEmail"
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary cursor-pointer"
+                  {...register('rememberEmail')}
+                />
+                <label htmlFor="rememberEmail" className="text-sm text-text-sub cursor-pointer select-none">
+                  이메일 저장
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="autoLogin"
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary cursor-pointer"
+                  {...register('autoLogin')}
+                />
+                <label htmlFor="autoLogin" className="text-sm text-text-sub cursor-pointer select-none">
+                  자동로그인
+                </label>
+              </div>
             </div>
 
             {/* 서버 에러 */}

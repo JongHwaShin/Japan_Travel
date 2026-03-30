@@ -7,6 +7,7 @@ build/
 
 ### 보안 파일 ###
 src/main/resources/application.yml
+.env
 
 ### 로그 ###
 logs/

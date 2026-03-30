@@ -99,7 +99,7 @@ japan-travel/
 
 | Enum | 값 |
 |------|----|
-| PlaceCategory | 맛집, 관광지, 카페, 쇼핑 |
+| PlaceCategory | 맛집, 관광지, 카페, 쇼핑, 숙박 |
 | PriceRange | LOW(₩), MEDIUM(₩₩), HIGH(₩₩₩) |
 | TransportType | JR, 지하철, 버스, 공항버스, 택시 |
 
@@ -111,6 +111,7 @@ japan-travel/
 
 **스키마 변경 이력**
 - v1.1: `users` 테이블에 `refresh_token VARCHAR(500)` 컬럼 추가
+- v1.2: `places` 테이블 `category` ENUM에 `숙박` 추가
 
 **DB 테이블 목록**
 - users (회원, refresh_token 컬럼 포함)
@@ -148,6 +149,7 @@ japan-travel/
 | /signup | 회원가입 | X |
 | /places | 맛집/관광지 목록 | X |
 | /places/:id | 장소 상세 | X |
+| /city/:regionId | 도시 상세 (장소 카테고리 탭) | X |
 | /logs | 여행일기 목록 | X |
 | /logs/:id | 일기 상세 | X |
 | /transport | 교통정보 | X |
