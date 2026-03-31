@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
 import PlaceCard from '../components/PlaceCard'
 import PlaceCardSkeleton from '../components/PlaceCardSkeleton'
+import Pagination from '../components/Pagination'
 
 const CITY_IMAGES = {
   '후쿠오카': 'https://images.unsplash.com/photo-1679230708086-2b10acf31074?w=800&q=80&fit=crop',
@@ -16,11 +17,13 @@ const CITY_IMAGES = {
 }
 
 const CATEGORIES = ['전체', '맛집', '관광지', '카페', '쇼핑', '숙박']
+const PAGE_SIZE = 12
 
 export default function CityPage() {
   const { regionId } = useParams()
   const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('전체')
+  const [page, setPage] = useState(0)
 
   const { data: region } = useQuery({
     queryKey: ['region', regionId],
@@ -28,15 +31,27 @@ export default function CityPage() {
     enabled: !!regionId,
   })
 
-  const { data: places = [], isLoading, isError } = useQuery({
-    queryKey: ['places', regionId, activeCategory],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['places', regionId, activeCategory, page],
     queryFn: () => {
-      const params = { regionId }
+      const params = { regionId, page, size: PAGE_SIZE }
       if (activeCategory !== '전체') params.category = activeCategory
-      return api.get('/places', { params }).then((r) => r.data.data ?? [])
+      return api.get('/places', { params }).then((r) => r.data.data)
     },
     enabled: !!regionId,
   })
+
+  const places = data?.content ?? []
+
+  const handleCategoryChange = (cat) => {
+    setActiveCategory(cat)
+    setPage(0)
+  }
+
+  const handlePageChange = (p) => {
+    setPage(p)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const heroImage = CITY_IMAGES[region?.nameKo] ?? ''
 
@@ -96,7 +111,7 @@ export default function CityPage() {
               return (
                 <li key={cat}>
                   <button
-                    onClick={() => setActiveCategory(cat)}
+                    onClick={() => handleCategoryChange(cat)}
                     className={`min-h-[36px] px-4 rounded-full text-sm font-semibold border transition-colors ${
                       isActive
                         ? 'bg-primary text-white border-primary shadow-sm'
@@ -148,6 +163,15 @@ export default function CityPage() {
               <PlaceCard key={place.placeId} {...place} />
             ))}
           </div>
+        )}
+
+        {/* 페이지네이션 */}
+        {!isLoading && !isError && (
+          <Pagination
+            currentPage={page}
+            totalPages={data?.totalPages ?? 0}
+            onPageChange={handlePageChange}
+          />
         )}
 
       </div>

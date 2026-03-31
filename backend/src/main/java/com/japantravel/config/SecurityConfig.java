@@ -63,6 +63,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,  "/api/logs/**").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // 관리자 API
+                .requestMatchers("/api/admin/**").authenticated()
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )

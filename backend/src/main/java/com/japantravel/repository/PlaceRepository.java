@@ -2,20 +2,21 @@ package com.japantravel.repository;
 
 import com.japantravel.domain.Place;
 import com.japantravel.domain.enums.PlaceCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     @Query("SELECT p FROM Place p WHERE p.region.regionId = :regionId")
-    List<Place> findByRegionId(@Param("regionId") Long regionId);
+    Page<Place> findByRegionId(@Param("regionId") Long regionId, Pageable pageable);
 
-    List<Place> findByCategory(PlaceCategory category);
+    Page<Place> findByCategory(PlaceCategory category, Pageable pageable);
 
     @Query("SELECT p FROM Place p WHERE p.region.regionId = :regionId AND p.category = :category")
-    List<Place> findByRegionIdAndCategory(@Param("regionId") Long regionId,
-                                          @Param("category") PlaceCategory category);
+    Page<Place> findByRegionIdAndCategory(@Param("regionId") Long regionId,
+                                          @Param("category") PlaceCategory category,
+                                          Pageable pageable);
 }

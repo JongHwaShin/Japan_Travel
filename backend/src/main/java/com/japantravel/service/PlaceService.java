@@ -3,10 +3,14 @@ package com.japantravel.service;
 import com.japantravel.domain.Place;
 import com.japantravel.domain.enums.PlaceCategory;
 import com.japantravel.dto.place.PlaceImageResponse;
+import com.japantravel.dto.place.PlacePageResponse;
 import com.japantravel.dto.place.PlaceResponse;
 import com.japantravel.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,34 +22,43 @@ import java.util.List;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
-    private final GooglePlacesService googlePlacesService;
 
     /**
-     * 전체 장소 목록 조회 (지역/카테고리 필터 옵션)
-     * regionId와 category 모두 null이면 전체 조회
+     * 전체 장소 목록 조회 (지역/카테고리 필터 + 페이지네이션)
      */
     @Transactional(readOnly = true)
-    public List<PlaceResponse> getPlaces(Long regionId, PlaceCategory category) {
-        log.info("[PlaceService] getPlaces 시작 - regionId: {}, category: {}", regionId, category);
+    public PlacePageResponse getPlaces(Long regionId, PlaceCategory category, int page, int size) {
+        log.info("[PlaceService] getPlaces 시작 - regionId: {}, category: {}, page: {}, size: {}",
+                regionId, category, page, size);
 
-        List<Place> places;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Place> pageResult;
 
         if (regionId != null && category != null) {
-            places = placeRepository.findByRegionIdAndCategory(regionId, category);
+            pageResult = placeRepository.findByRegionIdAndCategory(regionId, category, pageable);
         } else if (regionId != null) {
-            places = placeRepository.findByRegionId(regionId);
+            pageResult = placeRepository.findByRegionId(regionId, pageable);
         } else if (category != null) {
-            places = placeRepository.findByCategory(category);
+            pageResult = placeRepository.findByCategory(category, pageable);
         } else {
-            places = placeRepository.findAll();
+            pageResult = placeRepository.findAll(pageable);
         }
 
-        List<PlaceResponse> result = places.stream()
+        List<PlaceResponse> content = pageResult.getContent().stream()
                 .map(this::toResponseWithFallbackImage)
                 .toList();
 
-        log.info("[PlaceService] getPlaces 완료 - 조회 건수: {}", result.size());
-        return result;
+        log.info("[PlaceService] getPlaces 완료 - 조회 건수: {}, 전체: {}",
+                content.size(), pageResult.getTotalElements());
+
+        return PlacePageResponse.builder()
+                .content(content)
+                .totalPages(pageResult.getTotalPages())
+                .totalElements(pageResult.getTotalElements())
+                .currentPage(page)
+                .hasNext(pageResult.hasNext())
+                .hasPrevious(pageResult.hasPrevious())
+                .build();
     }
 
     /**
@@ -69,24 +82,12 @@ public class PlaceService {
 
     /**
      * Place → PlaceResponse 변환
-     * place_images 없으면 Google Places API로 사진 자동 검색
+     * 이미지는 place_images 테이블에서 가져오며, 없으면 빈 리스트 반환
      */
     private PlaceResponse toResponseWithFallbackImage(Place place) {
         List<PlaceImageResponse> images = place.getImages().stream()
                 .map(PlaceImageResponse::from)
                 .toList();
-
-        if (images.isEmpty()) {
-            String photoUrl = googlePlacesService.searchPlacePhoto(
-                    place.getNameKo(), place.getRegion().getNameKo());
-            if (photoUrl != null) {
-                images = List.of(PlaceImageResponse.builder()
-                        .imageId(null)
-                        .imageUrl(photoUrl)
-                        .isMain(true)
-                        .build());
-            }
-        }
 
         return PlaceResponse.builder()
                 .placeId(place.getPlaceId())
@@ -100,7 +101,6 @@ public class PlaceService {
                 .longitude(place.getLongitude())
                 .description(place.getDescription())
                 .openHours(place.getOpenHours())
-                .priceRange(place.getPriceRange())
                 .rating(place.getRating())
                 .createdAt(place.getCreatedAt())
                 .images(images)

@@ -11,4 +11,6 @@ public interface PlaceImageRepository extends JpaRepository<PlaceImage, Long> {
 
     @Query("SELECT pi FROM PlaceImage pi WHERE pi.place.placeId = :placeId")
     List<PlaceImage> findByPlaceId(@Param("placeId") Long placeId);
+
+    boolean existsByPlace_PlaceId(Long placeId);
 }

@@ -4,8 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
 import Loading from '../components/Loading'
 
-const PRICE_LABELS = { LOW: '¥  저렴', MEDIUM: '¥¥  보통', HIGH: '¥¥¥  고급' }
-
 const CATEGORY_COLORS = {
   맛집:   'bg-orange-100 text-orange-600',
   카페:   'bg-yellow-100 text-yellow-600',
@@ -174,7 +172,7 @@ export default function PlaceDetailPage() {
                 </span>
               </div>
 
-              {/* 평점 + 가격대 */}
+              {/* 평점 */}
               <div className="flex items-center gap-4 mt-3">
                 {place.rating != null && (
                   <div className="flex items-center gap-1">
@@ -183,11 +181,6 @@ export default function PlaceDetailPage() {
                       {Number(place.rating).toFixed(1)}
                     </span>
                   </div>
-                )}
-                {place.priceRange && (
-                  <span className="text-sm text-text-sub">
-                    {PRICE_LABELS[place.priceRange] ?? place.priceRange}
-                  </span>
                 )}
               </div>
             </div>

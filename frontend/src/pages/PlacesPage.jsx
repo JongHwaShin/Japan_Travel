@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
 import PlaceCard from '../components/PlaceCard'
 import PlaceCardSkeleton from '../components/PlaceCardSkeleton'
+import Pagination from '../components/Pagination'
 
 // ─── 상수 ──────────────────────────────────────────────────────────────────
 const FALLBACK_REGIONS = [
@@ -15,6 +16,7 @@ const FALLBACK_REGIONS = [
 ]
 
 const CATEGORIES = ['전체', '맛집', '관광지', '카페', '쇼핑', '숙박']
+const PAGE_SIZE = 12
 
 // ─── 서브 컴포넌트 ──────────────────────────────────────────────────────────
 
@@ -40,6 +42,7 @@ export default function PlacesPage() {
   const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [selectedRegionId, setSelectedRegionId] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState('전체')
+  const [page, setPage] = useState(0)
   const debounceTimer = useRef(null)
 
   // 지역 목록
@@ -49,21 +52,25 @@ export default function PlacesPage() {
     staleTime: 1000 * 60 * 30,
   })
 
-  // 장소 목록
-  const { data: places = [], isLoading, isError } = useQuery({
-    queryKey: ['places', selectedRegionId, selectedCategory],
+  // 장소 목록 (페이지네이션)
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['places', selectedRegionId, selectedCategory, page],
     queryFn: () =>
       api
         .get('/places', {
           params: {
             regionId: selectedRegionId ?? undefined,
             category: selectedCategory === '전체' ? undefined : selectedCategory,
+            page,
+            size: PAGE_SIZE,
           },
         })
         .then((r) => r.data.data),
   })
 
-  // 검색어 클라이언트 필터
+  const places = data?.content ?? []
+
+  // 검색어 클라이언트 필터 (현재 페이지 내 검색)
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return places
     const q = searchQuery.trim().toLowerCase()
@@ -79,25 +86,36 @@ export default function PlacesPage() {
     const val = e.target.value
     setInputValue(val)
     clearTimeout(debounceTimer.current)
-    debounceTimer.current = setTimeout(() => setSearchQuery(val), 300)
+    debounceTimer.current = setTimeout(() => {
+      setSearchQuery(val)
+      setPage(0)
+    }, 300)
   }
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     clearTimeout(debounceTimer.current)
     setSearchQuery(inputValue)
+    setPage(0)
   }
 
   const handleRegionSelect = (id) => {
     setSelectedRegionId(id)
     setInputValue('')
     setSearchQuery('')
+    setPage(0)
   }
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat)
     setInputValue('')
     setSearchQuery('')
+    setPage(0)
+  }
+
+  const handlePageChange = (p) => {
+    setPage(p)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const regionTabs = [{ regionId: null, nameKo: '전체' }, ...regions]
@@ -128,7 +146,7 @@ export default function PlacesPage() {
             {inputValue && (
               <button
                 type="button"
-                onClick={() => { setInputValue(''); setSearchQuery('') }}
+                onClick={() => { setInputValue(''); setSearchQuery(''); setPage(0) }}
                 className="text-text-sub hover:text-text-main"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -148,11 +166,10 @@ export default function PlacesPage() {
                 <li key={regionId ?? 'all'}>
                   <button
                     onClick={() => handleRegionSelect(regionId)}
-                    className={`min-h-[36px] px-4 rounded-full text-sm font-semibold border transition-colors ${
-                      isActive
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-white text-text-sub border-gray-200 hover:border-primary hover:text-primary'
-                    }`}
+                    className={`min-h-[36px] px-4 rounded-full text-sm font-semibold border transition-colors ${isActive
+                      ? 'bg-primary text-white border-primary shadow-sm'
+                      : 'bg-white text-text-sub border-gray-200 hover:border-primary hover:text-primary'
+                      }`}
                   >
                     {nameKo}
                   </button>
@@ -171,11 +188,10 @@ export default function PlacesPage() {
                 <li key={cat}>
                   <button
                     onClick={() => handleCategorySelect(cat)}
-                    className={`min-h-[32px] px-3.5 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-text-sub hover:text-text-main hover:bg-gray-100'
-                    }`}
+                    className={`min-h-[32px] px-3.5 rounded-lg text-xs font-semibold transition-colors ${isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-text-sub hover:text-text-main hover:bg-gray-100'
+                      }`}
                   >
                     {cat}
                   </button>
@@ -190,7 +206,7 @@ export default function PlacesPage() {
       {/* 결과 수 */}
       {!isLoading && !isError && (
         <p className="px-4 md:px-6 lg:px-0 pt-4 pb-2 text-xs text-text-sub">
-          총 <span className="font-semibold text-text-main">{filtered.length}</span>개
+          총 <span className="font-semibold text-text-main">{data?.totalElements ?? 0}</span>개
         </p>
       )}
 
@@ -226,6 +242,15 @@ export default function PlacesPage() {
               <PlaceCard key={place.placeId} {...place} />
             ))}
           </div>
+        )}
+
+        {/* 페이지네이션 (검색 중에는 숨김) */}
+        {!isLoading && !isError && !searchQuery && (
+          <Pagination
+            currentPage={page}
+            totalPages={data?.totalPages ?? 0}
+            onPageChange={handlePageChange}
+          />
         )}
 
       </div>

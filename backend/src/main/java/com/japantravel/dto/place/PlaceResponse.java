@@ -2,7 +2,6 @@ package com.japantravel.dto.place;
 
 import com.japantravel.domain.Place;
 import com.japantravel.domain.enums.PlaceCategory;
-import com.japantravel.domain.enums.PriceRange;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,7 +24,6 @@ public class PlaceResponse {
     private BigDecimal longitude;
     private String description;
     private String openHours;
-    private PriceRange priceRange;
     private BigDecimal rating;
     private LocalDateTime createdAt;
     private List<PlaceImageResponse> images;
@@ -43,7 +41,6 @@ public class PlaceResponse {
                 .longitude(place.getLongitude())
                 .description(place.getDescription())
                 .openHours(place.getOpenHours())
-                .priceRange(place.getPriceRange())
                 .rating(place.getRating())
                 .createdAt(place.getCreatedAt())
                 .images(place.getImages().stream()

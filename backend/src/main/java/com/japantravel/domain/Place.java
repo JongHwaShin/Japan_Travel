@@ -1,12 +1,8 @@
 package com.japantravel.domain;
 
-import com.japantravel.domain.converter.PriceRangeConverter;
 import com.japantravel.domain.enums.PlaceCategory;
-import com.japantravel.domain.enums.PriceRange;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -57,11 +53,6 @@ public class Place {
 
     @Column(name = "open_hours", length = 100)
     private String openHours;
-
-    @Convert(converter = PriceRangeConverter.class)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "price_range")
-    private PriceRange priceRange;
 
     @Column(precision = 2, scale = 1)
     private BigDecimal rating;

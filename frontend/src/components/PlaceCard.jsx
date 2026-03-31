@@ -1,11 +1,5 @@
 import { Link } from 'react-router-dom'
 
-const PRICE_LABELS = {
-  LOW: '¥',
-  MEDIUM: '¥¥',
-  HIGH: '¥¥¥',
-}
-
 const CATEGORY_COLORS = {
   맛집:   'bg-orange-100 text-orange-600',
   카페:   'bg-yellow-100 text-yellow-600',
@@ -27,14 +21,13 @@ const CATEGORY_FALLBACK_IMAGES = {
  * API PlaceResponse 필드를 그대로 받는다.
  * images 없으면 카테고리별 기본 이미지 표시
  */
-export default function PlaceCard({ placeId, nameKo, category, images, rating, priceRange }) {
+export default function PlaceCard({ placeId, nameKo, category, images, rating }) {
   const imageUrl =
     images?.find((i) => i.isMain)?.imageUrl ??
     images?.[0]?.imageUrl ??
     CATEGORY_FALLBACK_IMAGES[category]
 
   const categoryColor = CATEGORY_COLORS[category] ?? 'bg-gray-100 text-gray-600'
-  const priceLabel = PRICE_LABELS[priceRange] ?? ''
 
   return (
     <Link
@@ -66,9 +59,6 @@ export default function PlaceCard({ placeId, nameKo, category, images, rating, p
             <span>⭐</span>
             <span className="font-medium text-text-main">{rating != null ? Number(rating).toFixed(1) : '-'}</span>
           </div>
-          {priceLabel && (
-            <span className="text-xs font-medium text-text-sub">{priceLabel}</span>
-          )}
         </div>
       </div>
     </Link>
