@@ -1,0 +1,21 @@
+# Docker 환경변수 (민감 정보)
+.env.docker
+.env.local
+.env.production
+
+# Backend
+backend/build/
+backend/logs/
+backend/.gradle/
+backend/bin/
+*.jar
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store

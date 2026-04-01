@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mariadb://${DB_HOST:db}:${DB_PORT:3306}/${DB_NAME:japan_travel}?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  jackson:
+    time-zone: Asia/Seoul
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 3600000       # 1시간 (ms)
+  refresh-expiration: 2592000000   # 30일 (ms)
+
+google:
+  places:
+    api-key: ${GOOGLE_PLACES_API_KEY}
+
+logging:
+  level:
+    root: INFO
+    com.japantravel: INFO
+    org.springframework: INFO
