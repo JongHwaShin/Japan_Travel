@@ -8,7 +8,7 @@ export default function LogsSection() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['logs', 'home'],
     queryFn: () =>
-      api.get('/logs', { params: { size: 4, sort: 'createdAt,desc' } }).then((r) => r.data.data),
+      api.get('/api/logs', { params: { size: 4, sort: 'createdAt,desc' } }).then((r) => r.data.data),
   })
 
   const logs = data?.content ?? data ?? []

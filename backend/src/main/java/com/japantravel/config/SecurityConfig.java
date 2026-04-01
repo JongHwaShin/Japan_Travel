@@ -55,7 +55,7 @@ public class SecurityConfig {
             // 요청 권한 설정
             .authorizeHttpRequests(auth -> auth
                 // 인증 없이 허용
-                .requestMatchers(HttpMethod.POST, "/api/auth/signup", "/api/auth/login", "/api/auth/refresh").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/places/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/regions/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/transport/**").permitAll()
@@ -80,9 +80,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // React 개발 서버
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        // iOS 앱은 브라우저가 아니므로 CORS 제약 없음 — 필요 시 allowedOriginPatterns 추가
+        // React 개발 서버 (개발 환경 — 전체 허용)
+        config.setAllowedOriginPatterns(List.of("*"));
+        // iOS 앱은 브라우저가 아니므로 CORS 제약 없음
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));

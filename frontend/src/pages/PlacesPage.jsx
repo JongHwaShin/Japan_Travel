@@ -48,7 +48,7 @@ export default function PlacesPage() {
   // 지역 목록
   const { data: regions = FALLBACK_REGIONS } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30,
   })
 
@@ -57,7 +57,7 @@ export default function PlacesPage() {
     queryKey: ['places', selectedRegionId, selectedCategory, page],
     queryFn: () =>
       api
-        .get('/places', {
+        .get('/api/places', {
           params: {
             regionId: selectedRegionId ?? undefined,
             category: selectedCategory === '전체' ? undefined : selectedCategory,

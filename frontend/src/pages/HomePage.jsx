@@ -28,7 +28,7 @@ export default function HomePage() {
 
   const { data: regions = FALLBACK_REGIONS } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30,
   })
 

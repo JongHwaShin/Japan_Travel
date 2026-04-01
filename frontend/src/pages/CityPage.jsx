@@ -27,7 +27,7 @@ export default function CityPage() {
 
   const { data: region } = useQuery({
     queryKey: ['region', regionId],
-    queryFn: () => api.get(`/regions/${regionId}`).then((r) => r.data.data),
+    queryFn: () => api.get(`/api/regions/${regionId}`).then((r) => r.data.data),
     enabled: !!regionId,
   })
 
@@ -36,7 +36,7 @@ export default function CityPage() {
     queryFn: () => {
       const params = { regionId, page, size: PAGE_SIZE }
       if (activeCategory !== '전체') params.category = activeCategory
-      return api.get('/places', { params }).then((r) => r.data.data)
+      return api.get('/api/places', { params }).then((r) => r.data.data)
     },
     enabled: !!regionId,
   })

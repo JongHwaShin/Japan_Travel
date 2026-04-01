@@ -117,7 +117,7 @@ export default function TransportPage() {
 
   const { data: regions = FALLBACK_REGIONS } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30,
   })
 
@@ -125,8 +125,8 @@ export default function TransportPage() {
     queryKey: ['transport', selectedRegionId],
     queryFn: () =>
       selectedRegionId
-        ? api.get(`/transport/${selectedRegionId}`).then((r) => r.data.data)
-        : api.get('/transport').then((r) => r.data.data),
+        ? api.get(`/api/transport/${selectedRegionId}`).then((r) => r.data.data)
+        : api.get('/api/transport').then((r) => r.data.data),
   })
 
   const filtered = useMemo(() => {

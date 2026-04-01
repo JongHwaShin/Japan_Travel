@@ -22,7 +22,7 @@ export default function SignupPage() {
     setServerError('')
     setIsLoading(true)
     try {
-      await api.post('/auth/signup', { email, password, nickname })
+      await api.post('/api/auth/signup', { email, password, nickname })
       navigate('/login', { state: { signupSuccess: true } })
     } catch (err) {
       setServerError(err.response?.data?.message ?? '회원가입에 실패했습니다.')

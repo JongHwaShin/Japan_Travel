@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
 
@@ -265,10 +265,12 @@ function QuickConvert({ rate }) {
 // ─── 메인 페이지 ────────────────────────────────────────────────────────────
 
 export default function ExchangePage() {
+  useEffect(() => { window.scrollTo(0, 0) }, [])
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['exchange', 'KRW', 'JPY'],
     queryFn: () =>
-      api.get('/exchange', { params: { from: 'KRW', to: 'JPY' } }).then((r) => r.data.data),
+      api.get('/api/exchange', { params: { from: 'KRW', to: 'JPY' } }).then((r) => r.data.data),
     staleTime: 1000 * 60 * 10, // 10분
     refetchOnWindowFocus: true,
   })

@@ -24,7 +24,6 @@ export default function HeroBanner() {
       {/* 원형 장식 - 후지산 실루엣 느낌 */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-white/8 blur-3xl" />
       <div className="absolute top-4 right-8 w-20 h-20 rounded-full bg-white/20 blur-xl" />
-      <div className="absolute top-12 right-20 w-8 h-8 rounded-full bg-white/30" />
 
       {/* 콘텐츠 */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-14 md:py-20 lg:py-24">
@@ -41,19 +40,19 @@ export default function HeroBanner() {
 
         {/* 검색바 */}
         <form onSubmit={handleSearch} className="mt-7 w-full max-w-md">
-          <div className="flex items-center gap-2 bg-white rounded-2xl shadow-lg px-4 py-1">
-            <svg className="w-5 h-5 text-text-sub flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="flex items-center bg-white rounded-2xl shadow-lg px-4 h-12">
+            <svg className="w-4 h-4 text-text-sub flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
               ref={inputRef}
               type="text"
               placeholder="도시명, 맛집명으로 검색..."
-              className="flex-1 h-11 text-sm text-text-main placeholder:text-text-sub outline-none bg-transparent"
+              className="flex-1 min-w-0 mx-2 text-sm text-text-main placeholder:text-text-sub outline-none bg-transparent h-full"
             />
             <button
               type="submit"
-              className="flex-shrink-0 bg-primary text-white text-xs font-semibold px-4 h-8 rounded-xl hover:bg-orange-500 transition-colors"
+              className="flex-shrink-0 bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-xl hover:bg-orange-500 transition-colors whitespace-nowrap"
             >
               검색
             </button>

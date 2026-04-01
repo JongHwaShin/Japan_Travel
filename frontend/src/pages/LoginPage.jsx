@@ -40,7 +40,7 @@ export default function LoginPage() {
     setServerError('')
     setIsLoading(true)
     try {
-      const { data } = await api.post('/auth/login', { email, password })
+      const { data } = await api.post('/api/auth/login', { email, password })
       const { accessToken, refreshToken, user } = data.data
 
       if (rememberEmail) {
@@ -50,6 +50,7 @@ export default function LoginPage() {
       }
 
       login(user, accessToken, refreshToken, autoLogin)
+      window.scrollTo(0, 0)
       navigate('/', { replace: true })
     } catch (err) {
       setServerError(err.response?.data?.message ?? '로그인에 실패했습니다.')

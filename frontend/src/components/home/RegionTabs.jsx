@@ -18,7 +18,7 @@ const ALL_TAB = { id: null, name: '전체' }
 export default function RegionTabs({ selectedId, onSelect }) {
   const { data: regions = FALLBACK_REGIONS } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30, // 지역 목록은 30분 캐시
   })
 

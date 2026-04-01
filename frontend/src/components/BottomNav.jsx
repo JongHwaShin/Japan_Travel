@@ -16,14 +16,14 @@ export default function BottomNav() {
       bg-card border-t border-gray-100 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]
       lg:hidden
     ">
-      <ul className="flex items-center justify-around px-1" style={{ height: 'calc(4rem + env(safe-area-inset-bottom))' }}>
+      <ul className="flex items-center justify-around px-1 h-16">
         {NAV_ITEMS.map(({ to, label, icon }) => (
-          <li key={to} className="flex-1" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <li key={to} className="flex-1">
             <NavLink
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-0.5 min-h-[44px] w-full rounded-xl transition-colors ${
+                `flex flex-col items-center justify-center gap-1 min-h-[44px] w-full rounded-xl transition-colors ${
                   isActive ? 'text-primary' : 'text-text-sub'
                 }`
               }
@@ -34,6 +34,8 @@ export default function BottomNav() {
           </li>
         ))}
       </ul>
+      {/* iOS safe area 여백 */}
+      <div style={{ height: 'env(safe-area-inset-bottom)' }} />
     </nav>
   )
 }

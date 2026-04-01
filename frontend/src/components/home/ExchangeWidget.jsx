@@ -12,7 +12,7 @@ export default function ExchangeWidget() {
   const { data, isLoading, isError, dataUpdatedAt } = useQuery({
     queryKey: ['exchange', 'KRW', 'JPY'],
     queryFn: () =>
-      api.get('/exchange', { params: { from: 'KRW', to: 'JPY' } }).then((r) => r.data.data),
+      api.get('/api/exchange', { params: { from: 'KRW', to: 'JPY' } }).then((r) => r.data.data),
     staleTime: 1000 * 60 * 10, // 10분
   })
 

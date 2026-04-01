@@ -18,7 +18,7 @@ function LikeButton({ logId, liked, likeCount, isLoggedIn }) {
   const [animating, setAnimating] = useState(false)
 
   const { mutate: toggleLike, isPending } = useMutation({
-    mutationFn: () => api.post(`/logs/${logId}/like`),
+    mutationFn: () => api.post(`/api/logs/${logId}/like`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['log', String(logId)] })
     },
@@ -60,7 +60,7 @@ function CommentSection({ logId, comments, isLoggedIn }) {
   const textareaRef = useRef(null)
 
   const { mutate: addComment, isPending } = useMutation({
-    mutationFn: (text) => api.post(`/logs/${logId}/comments`, { content: text }),
+    mutationFn: (text) => api.post(`/api/logs/${logId}/comments`, { content: text }),
     onSuccess: () => {
       setContent('')
       queryClient.invalidateQueries({ queryKey: ['log', String(logId)] })
@@ -176,11 +176,11 @@ export default function LogDetailPage() {
 
   const { data: log, isLoading, isError } = useQuery({
     queryKey: ['log', id],
-    queryFn: () => api.get(`/logs/${id}`).then((r) => r.data.data),
+    queryFn: () => api.get(`/api/logs/${id}`).then((r) => r.data.data),
   })
 
   const { mutate: deleteLog, isPending: isDeleting } = useMutation({
-    mutationFn: () => api.delete(`/logs/${id}`),
+    mutationFn: () => api.delete(`/api/logs/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs'] })
       navigate('/logs', { replace: true })

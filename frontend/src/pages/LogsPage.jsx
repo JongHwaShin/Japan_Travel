@@ -20,13 +20,13 @@ export default function LogsPage() {
 
   const { data: regions = FALLBACK_REGIONS } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30,
   })
 
   const { data: logs = [], isLoading, isError } = useQuery({
     queryKey: ['logs'],
-    queryFn: () => api.get('/logs').then((r) => r.data.data),
+    queryFn: () => api.get('/api/logs').then((r) => r.data.data),
   })
 
   // 지역 클라이언트 필터

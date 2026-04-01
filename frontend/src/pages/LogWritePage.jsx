@@ -49,7 +49,7 @@ export default function LogWritePage() {
   // 지역 목록
   const { data: regions = [] } = useQuery({
     queryKey: ['regions'],
-    queryFn: () => api.get('/regions').then((r) => r.data.data),
+    queryFn: () => api.get('/api/regions').then((r) => r.data.data),
     staleTime: 1000 * 60 * 30,
   })
 
@@ -98,7 +98,7 @@ export default function LogWritePage() {
 
   const { mutate: submit, isPending, isError, error } = useMutation({
     mutationFn: (data) =>
-      api.post('/logs', {
+      api.post('/api/logs', {
         title: data.title,
         content: data.content,
         regionId: data.regionId ? Number(data.regionId) : null,

@@ -104,7 +104,7 @@ export default function PlaceDetailPage() {
 
   const { data: place, isLoading, isError } = useQuery({
     queryKey: ['place', id],
-    queryFn: () => api.get(`/places/${id}`).then((r) => r.data.data),
+    queryFn: () => api.get(`/api/places/${id}`).then((r) => r.data.data),
   })
 
   // 구글맵 링크 생성
