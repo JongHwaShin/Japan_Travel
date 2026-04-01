@@ -142,6 +142,21 @@ Swagger UI: **http://localhost:8080/swagger-ui/index.html**
 
 ## 📌 버전 히스토리
 
+### v1.0.3 (2026-04-01)
+- 🛡️ SecurityConfig CORS `allowedOriginPatterns("*")` 전체 허용 (개발 환경)
+- 🔓 `/api/auth/**` 전체 permitAll 적용 (로그인 403 버그 수정)
+- 🐛 프론트 API 경로 `/api` prefix 누락 전체 수정 (21개 호출)
+- ☰ 헤더 햄버거 사이드바 추가 (슬라이드 애니메이션, 오버레이, 로그인/로그아웃)
+- 🐛 로그인 후 화면 확대 버그 수정 (viewport `maximum-scale=1.0, user-scalable=no`)
+- 🐛 환율·로그인 페이지 진입 시 스크롤 최상단 이동
+- 🐛 맛집/관광지 페이지 데이터 조회 불가 수정 (`/api/places` 경로 누락)
+- 📝 로그 레벨 정리 (`com.japantravel: DEBUG`, `org.springframework: INFO`)
+
+### v1.0.2 (2026-03-31)
+- 🖼️ 장소 이미지 연동 (place_images 테이블, is_main 구분)
+- 📄 장소 목록 페이지네이션 적용 (page/size 파라미터)
+- 🐛 이미지 없는 장소 빈 리스트 처리 (fallback 방어 코드)
+
 ### v1.0.1 (2026-03-30)
 - 🏙️ 도시별 상세 페이지 추가 (`/city/:regionId`) — 카테고리 탭, 스켈레톤 로딩
 - 🛏️ 숙박 카테고리 추가 (PlaceCategory enum + DB ENUM + 프론트 필터)
@@ -154,6 +169,3 @@ Swagger UI: **http://localhost:8080/swagger-ui/index.html**
 - 🎉 초기 릴리즈
 - 백엔드: JWT 인증, 맛집/관광지, 여행일기 CRUD, 교통정보, 환율 API
 - 프론트엔드: 전체 페이지 구현 (홈·목록·상세·작성·교통·환율)
-
-### v2.0 (예정)
-- 🤖 AI 여행 플래너 (Claude API 연동)
