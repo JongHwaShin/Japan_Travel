@@ -1,7 +1,11 @@
-# Docker 환경변수 (민감 정보)
+# 환경변수 파일 (민감 정보 — 절대 커밋 금지)
+.env
 .env.docker
 .env.local
 .env.production
+backend/.env
+frontend/.env
+frontend/.env.*
 
 # Backend
 backend/build/

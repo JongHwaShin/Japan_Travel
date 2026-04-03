@@ -67,6 +67,29 @@ japan-travel/
 
 ---
 
+## 🔑 환경변수 설정
+
+### 백엔드 (`backend/.env`)
+
+```env
+# Google Places API 키 (필수 — 없으면 서버 시작 실패)
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+
+# JWT 시크릿 (32자 이상 필수)
+JWT_SECRET=your_jwt_secret_key_must_be_32_chars_minimum
+```
+
+> `backend/.env` 파일은 `.gitignore`에 포함되어 있어 커밋되지 않습니다.
+
+### 프론트엔드 (`frontend/.env`)
+
+```env
+# 백엔드 API 주소 (로컬 개발 시 생략 가능, 기본값: http://localhost:8080)
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+---
+
 ## 🚀 실행 방법
 
 ### 사전 준비
@@ -79,9 +102,8 @@ japan-travel/
 ```bash
 cd backend
 
-# 1. application.yml 설정
-cp src/main/resources/application.yml.example src/main/resources/application.yml
-# application.yml 에서 DB 비밀번호, JWT 시크릿 입력
+# 1. 환경변수 파일 생성
+cp .env.example .env   # 또는 직접 backend/.env 생성 후 위 환경변수 입력
 
 # 2. DB 스키마 초기화
 # schema.sql 을 MariaDB에 직접 실행

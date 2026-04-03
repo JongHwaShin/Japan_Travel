@@ -1,5 +1,6 @@
 package com.japantravel.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,16 @@ public class GooglePlacesService {
 
     public GooglePlacesService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
+    }
+
+    @PostConstruct
+    public void validateApiKey() {
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException(
+                    "GOOGLE_PLACES_API_KEY 환경변수가 설정되지 않았습니다. " +
+                    "backend/.env 파일에 GOOGLE_PLACES_API_KEY=your_key 를 추가해주세요.");
+        }
+        log.info("[GooglePlacesService] API 키 확인 완료");
     }
 
     /**
