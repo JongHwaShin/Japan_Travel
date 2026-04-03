@@ -1,5 +1,6 @@
 package com.japantravel.config;
 
+import com.japantravel.global.filter.RateLimitFilter;
 import com.japantravel.security.CustomUserDetailsService;
 import com.japantravel.security.JwtAuthenticationFilter;
 import com.japantravel.security.JwtTokenProvider;
@@ -32,6 +33,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public RateLimitFilter rateLimitFilter() {
+        return new RateLimitFilter();
     }
 
     @Bean
@@ -69,7 +75,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 등록
+            // RateLimitFilter → JwtAuthenticationFilter 순으로 등록
+            .addFilterBefore(rateLimitFilter(), JwtAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class);
 
