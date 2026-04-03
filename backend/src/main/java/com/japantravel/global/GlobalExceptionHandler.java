@@ -1,6 +1,7 @@
 package com.japantravel.global;
 
 import com.japantravel.dto.common.ApiResponse;
+import com.japantravel.global.exception.LoginBlockedException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /** 로그인 차단 (브루트포스) — 429 */
+    @ExceptionHandler(LoginBlockedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLoginBlocked(LoginBlockedException e) {
+        log.warn("[GlobalExceptionHandler] LoginBlockedException - {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(ApiResponse.fail(e.getMessage()));
+    }
 
     /** 잘못된 요청 (중복, 유효하지 않은 값 등) — 400 */
     @ExceptionHandler(IllegalArgumentException.class)

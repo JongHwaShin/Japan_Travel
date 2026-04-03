@@ -6,6 +6,7 @@ import com.japantravel.dto.auth.RefreshRequest;
 import com.japantravel.dto.auth.SignupRequest;
 import com.japantravel.dto.common.ApiResponse;
 import com.japantravel.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        log.info("[AuthController] POST /api/auth/login - email: {}", request.getEmail());
-        LoginResponse response = authService.login(request);
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request,
+                                            HttpServletRequest httpRequest) {
+        String ip = resolveClientIp(httpRequest);
+        log.info("[AuthController] POST /api/auth/login - email: {}, IP: {}", request.getEmail(), ip);
+        LoginResponse response = authService.login(request, ip);
         return ApiResponse.ok("로그인 성공", response);
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     @PostMapping("/refresh")

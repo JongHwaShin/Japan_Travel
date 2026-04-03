@@ -5,6 +5,7 @@ import com.japantravel.dto.auth.LoginRequest;
 import com.japantravel.dto.auth.LoginResponse;
 import com.japantravel.dto.auth.RefreshRequest;
 import com.japantravel.dto.auth.SignupRequest;
+import com.japantravel.global.exception.LoginBlockedException;
 import com.japantravel.repository.UserRepository;
 import com.japantravel.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final LoginAttemptService loginAttemptService;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -47,19 +49,30 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse login(LoginRequest request) {
-        log.info("[AuthService] login 시작 - email: {}", request.getEmail());
+    public LoginResponse login(LoginRequest request, String ip) {
+        log.info("[AuthService] login 시작 - email: {}, IP: {}", request.getEmail(), ip);
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> {
-                    log.warn("[AuthService] 로그인 실패 - 존재하지 않는 이메일: {}", request.getEmail());
-                    return new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
-                });
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            log.warn("[AuthService] 로그인 실패 - 비밀번호 불일치, email: {}", request.getEmail());
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+        // 브루트포스 차단 확인
+        if (loginAttemptService.isBlocked(ip)) {
+            throw new LoginBlockedException("로그인 시도 횟수 초과. 30분 후 다시 시도해주세요.");
         }
+
+        User user;
+        try {
+            user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            loginAttemptService.loginFailed(ip);
+            log.warn("[AuthService] 로그인 실패 - email: {}, IP: {}", request.getEmail(), ip);
+            throw e;
+        }
+
+        // 로그인 성공 - 실패 기록 초기화
+        loginAttemptService.loginSucceeded(ip);
 
         String accessToken  = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId(), user.getEmail());
