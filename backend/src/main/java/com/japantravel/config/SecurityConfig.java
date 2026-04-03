@@ -103,10 +103,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // RateLimitFilter → JwtAuthenticationFilter 순으로 등록
-            .addFilterBefore(rateLimitFilter(), JwtAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+            // RateLimitFilter → JwtAuthenticationFilter → UsernamePasswordAuthenticationFilter 순으로 등록
+            .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
