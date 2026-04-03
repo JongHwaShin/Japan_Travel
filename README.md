@@ -164,15 +164,17 @@ Swagger UI: **http://localhost:8080/swagger-ui/index.html**
 
 ## 📌 버전 히스토리
 
-### v1.0.3 (2026-04-01)
-- 🛡️ SecurityConfig CORS `allowedOriginPatterns("*")` 전체 허용 (개발 환경)
+### v1.0.3 (2026-04-03)
+- 🛡️ Rate Limiting 추가 (Bucket4j, IP당 1분 60회 / 로그인 10회 / Places·환율 30회)
+- 🔐 로그인 브루트포스 차단 (5회 실패 시 30분 차단, LoginAttemptService)
+- 🔒 HTTP 보안 헤더 추가 (X-Frame-Options, XSS-Protection, CSP, HSTS, Referrer-Policy)
+- ✅ 회원가입 입력값 검증 강화 (비밀번호 영문+숫자 조합 `@Pattern`)
+- 🐳 Docker 배포 환경 구성 (backend/frontend Dockerfile, docker-compose.yml, application-prod.yml)
+- 🌐 axios baseURL 동적 설정 (접속 호스트 자동 감지, IP 변경 대응)
+- ☰ 헤더 햄버거 사이드바 추가 (슬라이드 애니메이션, 오버레이, 로그인/로그아웃)
+- 🐛 모바일 viewport 화면 확대 버그 수정 (`maximum-scale=1.0, user-scalable=no`)
 - 🔓 `/api/auth/**` 전체 permitAll 적용 (로그인 403 버그 수정)
 - 🐛 프론트 API 경로 `/api` prefix 누락 전체 수정 (21개 호출)
-- ☰ 헤더 햄버거 사이드바 추가 (슬라이드 애니메이션, 오버레이, 로그인/로그아웃)
-- 🐛 로그인 후 화면 확대 버그 수정 (viewport `maximum-scale=1.0, user-scalable=no`)
-- 🐛 환율·로그인 페이지 진입 시 스크롤 최상단 이동
-- 🐛 맛집/관광지 페이지 데이터 조회 불가 수정 (`/api/places` 경로 누락)
-- 📝 로그 레벨 정리 (`com.japantravel: DEBUG`, `org.springframework: INFO`)
 
 ### v1.0.2 (2026-03-31)
 - 🖼️ 장소 이미지 연동 (place_images 테이블, is_main 구분)
