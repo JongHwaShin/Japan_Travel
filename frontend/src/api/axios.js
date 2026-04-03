@@ -1,7 +1,15 @@
 import axios from 'axios'
 
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+  // 현재 접속한 호스트의 8080 포트로 자동 연결
+  return `${window.location.protocol}//${window.location.hostname}:8080`
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  baseURL: getBaseURL(),
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 })
