@@ -51,6 +51,34 @@ public class SecurityConfig {
             // CSRF 비활성화 (REST API)
             .csrf(AbstractHttpConfigurer::disable)
 
+            // 보안 헤더
+            .headers(headers -> headers
+                // X-Content-Type-Options: nosniff (MIME 스니핑 방지)
+                .contentTypeOptions(contentType -> {})
+                // X-Frame-Options: DENY (클릭재킹 방지)
+                .frameOptions(frame -> frame.deny())
+                // X-XSS-Protection: 1; mode=block
+                .xssProtection(xss -> {})
+                // Strict-Transport-Security (HTTPS 강제, 1년)
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(31536000))
+                // Content-Security-Policy
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives(
+                        "default-src 'self'; " +
+                        "script-src 'self'; " +
+                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                        "font-src 'self' https://fonts.gstatic.com; " +
+                        "img-src 'self' data: https:; " +
+                        "connect-src 'self'; " +
+                        "frame-ancestors 'none'"
+                    ))
+                // Referrer-Policy: strict-origin-when-cross-origin
+                .referrerPolicy(referrer -> referrer
+                    .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+            )
+
             // CORS 설정
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
