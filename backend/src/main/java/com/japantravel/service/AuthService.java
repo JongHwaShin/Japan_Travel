@@ -80,7 +80,7 @@ public class AuthService {
         user.updateRefreshToken(refreshToken);
         log.info("[AuthService] login 완료 - userId: {}", user.getUserId());
 
-        return LoginResponse.of(accessToken, refreshToken, user.getNickname());
+        return LoginResponse.of(user.getUserId(), user.getEmail(), user.getNickname(), accessToken, refreshToken);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class AuthService {
         user.updateRefreshToken(newRefreshToken);
         log.info("[AuthService] refresh 완료 - userId: {}", userId);
 
-        return LoginResponse.of(newAccessToken, newRefreshToken, user.getNickname());
+        return LoginResponse.of(userId, email, user.getNickname(), newAccessToken, newRefreshToken);
     }
 
     @Transactional

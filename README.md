@@ -164,6 +164,16 @@ Swagger UI: **http://localhost:8080/swagger-ui/index.html**
 
 ## 📌 버전 히스토리
 
+### v1.0.4 (2026-04-07)
+- 👤 프로필 페이지 추가 (`/profile`) — 닉네임 수정, 비밀번호 변경, 회원 탈퇴
+- 🖼️ 프로필 이미지 파일 업로드 기능 (MultipartFile → `./uploads/profiles/` 저장)
+- ✏️ 여행일기 수정/삭제 기능 추가 (상세 페이지 점 세 개 메뉴)
+- 📝 여행일기 수정 페이지 추가 (`/logs/:id/edit`)
+- 🐛 `GET /api/users/me` 500 에러 수정 (서버 미재시작으로 라우트 미등록 → `NoResourceFoundException` 500 처리 개선)
+- 🐛 수정 페이지 흰 화면 수정 (라우트 미등록 문제)
+- 🐛 닉네임 미표시 버그 수정 (LoginResponse `userId` 누락 → authStore `user.id` 미설정)
+- 🔒 `SecurityConfig` `/api/users/me` 정확한 경로 인증 처리 추가
+
 ### v1.0.3 (2026-04-03)
 - 🛡️ Rate Limiting 추가 (Bucket4j, IP당 1분 60회 / 로그인 10회 / Places·환율 30회)
 - 🔐 로그인 브루트포스 차단 (5회 실패 시 30분 차단, LoginAttemptService)

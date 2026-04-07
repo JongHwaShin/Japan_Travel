@@ -59,10 +59,11 @@ public class TravelLog extends BaseTimeEntity {
     @Builder.Default
     private List<Like> likes = new ArrayList<>();
 
-    public void update(String title, String content, Boolean isPublic, LocalDate travelDate) {
+    public void update(String title, String content, Boolean isPublic, LocalDate travelDate, Region region) {
         Optional.ofNullable(title).ifPresent(v -> this.title = v);
         Optional.ofNullable(content).ifPresent(v -> this.content = v);
         Optional.ofNullable(isPublic).ifPresent(v -> this.isPublic = v);
         Optional.ofNullable(travelDate).ifPresent(v -> this.travelDate = v);
+        Optional.ofNullable(region).ifPresent(v -> this.region = v);
     }
 }

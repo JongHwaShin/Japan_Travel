@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -51,6 +52,14 @@ public class GlobalExceptionHandler {
         log.error("[GlobalExceptionHandler] AccessDeniedException - {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.fail("접근 권한이 없습니다."));
+    }
+
+    /** 정적 리소스 없음 (잘못된 URL) — 404 */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+        log.warn("[GlobalExceptionHandler] NoResourceFoundException - {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.fail("요청한 리소스를 찾을 수 없습니다."));
     }
 
     /** 데이터 없음 — 404 */

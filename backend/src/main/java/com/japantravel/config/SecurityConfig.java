@@ -90,6 +90,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 인증 없이 허용
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/places/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/regions/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/transport/**").permitAll()
@@ -97,6 +98,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,  "/api/logs/**").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // 프로필 API
+                .requestMatchers("/api/users/me", "/api/users/me/**").authenticated()
                 // 관리자 API
                 .requestMatchers("/api/admin/**").authenticated()
                 // 나머지는 인증 필요

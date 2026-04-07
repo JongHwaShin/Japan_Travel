@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../api/axios'
@@ -173,6 +173,21 @@ export default function LogDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { isLoggedIn, user } = useAuthStore()
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  // 드롭다운 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!menuOpen) return
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
 
   const { data: log, isLoading, isError } = useQuery({
     queryKey: ['log', id],
@@ -187,11 +202,15 @@ export default function LogDetailPage() {
     },
   })
 
-  const isOwner = isLoggedIn && log && user?.id === log.userId
+  // userId로 비교 (재로그인 후) + nickname 폴백 (구 세션 호환)
+  const isOwner = isLoggedIn && log && (
+    (user?.id != null && user.id === log.userId) ||
+    (user?.nickname != null && user.nickname === log.nickname)
+  )
+  console.log('[LogDetail] isOwner:', isOwner, '| user:', user, '| log.userId:', log?.userId, '| log.nickname:', log?.nickname)
 
   const handleDelete = () => {
-    if (!window.confirm('정말 삭제하시겠어요?')) return
-    deleteLog()
+    setDeleteModalOpen(true)
   }
 
   return (
@@ -213,7 +232,7 @@ export default function LogDetailPage() {
       {log && (
         <div className="px-4 md:px-6 lg:px-0">
 
-          {/* 뒤로가기 + 수정/삭제 */}
+          {/* 뒤로가기 + ⋮ 메뉴 */}
           <div className="flex items-center justify-between pt-5 mb-5">
             <button
               onClick={() => navigate(-1)}
@@ -225,22 +244,45 @@ export default function LogDetailPage() {
               목록
             </button>
 
+            {/* 작성자만 표시되는 ⋮ 드롭다운 */}
             {isOwner && (
-              <div className="flex items-center gap-2">
-                <Link
-                  to={`/logs/${id}/edit`}
-                  className="text-sm text-text-sub hover:text-primary transition-colors"
-                >
-                  수정
-                </Link>
-                <span className="text-gray-200">|</span>
+              <div className="relative" ref={menuRef}>
                 <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="text-sm text-text-sub hover:text-red-500 transition-colors disabled:opacity-40"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl
+                    hover:bg-gray-100 transition-colors text-text-sub"
+                  aria-label="더보기 메뉴"
                 >
-                  삭제
+                  {/* 점 세 개 (⋮) */}
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="5" r="1.5" />
+                    <circle cx="12" cy="12" r="1.5" />
+                    <circle cx="12" cy="19" r="1.5" />
+                  </svg>
                 </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 top-11 w-36 bg-white rounded-xl
+                    shadow-lg border border-gray-100 py-1 z-20">
+                    <Link
+                      to={`/logs/${id}/edit`}
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm
+                        text-text-main hover:bg-gray-50 transition-colors"
+                    >
+                      <span>✏️</span>
+                      수정
+                    </Link>
+                    <button
+                      onClick={() => { setMenuOpen(false); handleDelete() }}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm
+                        text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      <span>🗑️</span>
+                      삭제
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -316,6 +358,39 @@ export default function LogDetailPage() {
             isLoggedIn={isLoggedIn}
           />
 
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {deleteModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          onClick={() => setDeleteModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-text-main mb-1">일기를 삭제할까요?</h3>
+            <p className="text-xs text-text-sub mb-5">삭제된 일기는 복구할 수 없습니다.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setDeleteModalOpen(false); deleteLog() }}
+                disabled={isDeleting}
+                className="flex-1 h-10 bg-red-500 text-white rounded-xl text-sm font-medium
+                  hover:bg-red-600 disabled:opacity-50 transition-colors"
+              >
+                {isDeleting ? '삭제 중...' : '삭제'}
+              </button>
+              <button
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1 h-10 border border-gray-200 text-text-sub rounded-xl
+                  text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

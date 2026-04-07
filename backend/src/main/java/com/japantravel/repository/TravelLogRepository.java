@@ -21,4 +21,11 @@ public interface TravelLogRepository extends JpaRepository<TravelLog, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE TravelLog t SET t.viewCount = t.viewCount + 1 WHERE t.logId = :logId")
     void incrementViewCount(@Param("logId") Long logId);
+
+    @Query("SELECT t.logId FROM TravelLog t WHERE t.user.userId = :userId")
+    List<Long> findLogIdsByUserId(@Param("userId") Long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM TravelLog t WHERE t.user.userId = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
 }

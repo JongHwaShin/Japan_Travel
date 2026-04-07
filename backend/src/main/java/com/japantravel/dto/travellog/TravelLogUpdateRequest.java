@@ -15,6 +15,8 @@ public class TravelLogUpdateRequest {
 
     private String content;
 
+    private Long regionId;
+
     private LocalDate travelDate;
 
     private Boolean isPublic;

@@ -10,9 +10,11 @@ import PlaceDetailPage from './pages/PlaceDetailPage'
 import LogsPage from './pages/LogsPage'
 import LogDetailPage from './pages/LogDetailPage'
 import LogWritePage from './pages/LogWritePage'
+import LogEditPage from './pages/LogEditPage'
 import TransportPage from './pages/TransportPage'
 import ExchangePage from './pages/ExchangePage'
 import CityPage from './pages/CityPage'
+import ProfilePage from './pages/ProfilePage'
 import useAuthStore from './store/authStore'
 
 // 로그인/회원가입: 헤더·바텀탭 없이 단독 레이아웃
@@ -104,7 +106,8 @@ function App() {
         {/* 로그인 필요 라우트 */}
         <Route element={<PrivateRoute />}>
           <Route path="/logs/write" element={<LogWritePage />} />
-          <Route path="/profile" element={<div className="page-container"><p className="text-text-sub">프로필 페이지</p></div>} />
+          <Route path="/logs/:id/edit" element={<LogEditPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
     </Routes>

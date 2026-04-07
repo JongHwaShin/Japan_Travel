@@ -41,7 +41,8 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       const { data } = await api.post('/api/auth/login', { email, password })
-      const { accessToken, refreshToken, user } = data.data
+      const { accessToken, refreshToken, userId, nickname } = data.data
+      const user = { id: userId, email, nickname }
 
       if (rememberEmail) {
         localStorage.setItem(SAVED_EMAIL_KEY, email)

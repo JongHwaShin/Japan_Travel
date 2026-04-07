@@ -7,15 +7,20 @@ import lombok.Getter;
 @Builder
 public class LoginResponse {
 
+    private final Long userId;
+    private final String email;
+    private final String nickname;
     private final String accessToken;
     private final String refreshToken;
-    private final String nickname;
 
-    public static LoginResponse of(String accessToken, String refreshToken, String nickname) {
+    public static LoginResponse of(Long userId, String email, String nickname,
+                                   String accessToken, String refreshToken) {
         return LoginResponse.builder()
+                .userId(userId)
+                .email(email)
+                .nickname(nickname)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .nickname(nickname)
                 .build();
     }
 }

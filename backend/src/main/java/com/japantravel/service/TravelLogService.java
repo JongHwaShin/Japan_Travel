@@ -115,8 +115,16 @@ public class TravelLogService {
         TravelLog travelLog = findLogOrThrow(logId);
         checkOwner(travelLog, userId, "수정");
 
+        Region region = null;
+        if (request.getRegionId() != null) {
+            region = regionRepository.findById(request.getRegionId())
+                    .orElseThrow(() -> {
+                        log.warn("[TravelLogService] 존재하지 않는 지역 - regionId: {}", request.getRegionId());
+                        return new IllegalArgumentException("존재하지 않는 지역입니다.");
+                    });
+        }
         travelLog.update(request.getTitle(), request.getContent(),
-                request.getIsPublic(), request.getTravelDate());
+                request.getIsPublic(), request.getTravelDate(), region);
 
         log.info("[TravelLogService] updateLog 완료 - logId: {}", logId);
 

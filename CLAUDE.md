@@ -86,6 +86,15 @@ japan-travel/
 | POST | /api/logs/{id}/like | 좋아요 토글 (인증 필요) |
 | POST | /api/logs/{id}/comments | 댓글 작성 (인증 필요) |
 
+### 프로필 (인증 필요)
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | /api/users/me | 내 프로필 조회 |
+| PUT | /api/users/me/nickname | 닉네임 변경 (중복 체크) |
+| PUT | /api/users/me/password | 비밀번호 변경 (현재 비밀번호 검증) |
+| PUT | /api/users/me/profile-image | 프로필 이미지 URL 변경 |
+| DELETE | /api/users/me | 회원 탈퇴 (비밀번호 확인, 관련 데이터 삭제) |
+
 ### 교통 / 환율
 | Method | URL | 설명 |
 |--------|-----|------|
@@ -112,6 +121,7 @@ japan-travel/
 **스키마 변경 이력**
 - v1.1: `users` 테이블에 `refresh_token VARCHAR(500)` 컬럼 추가
 - v1.2: `places` 테이블 `category` ENUM에 `숙박` 추가
+- v1.3: 프로필 API 추가 (UserController, UserService 확장 — profile_image 컬럼은 초기 스키마에 이미 포함)
 
 **DB 테이블 목록**
 - users (회원, refresh_token 컬럼 포함)
